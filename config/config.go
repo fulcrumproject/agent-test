@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // Config holds the configuration for the test agent
@@ -58,6 +60,10 @@ func LoadFromFile(filepath string) (*Config, error) {
 
 // LoadFromEnv overrides configuration with environment variables
 func (c *Config) LoadFromEnv() error {
+	// Load .env files if they exist
+	// .env.local takes precedence over .env
+	_ = godotenv.Load(".env.local")
+	_ = godotenv.Load(".env")
 	return LoadEnvToStruct(c, "TESTAGENT_", "env")
 }
 

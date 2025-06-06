@@ -30,8 +30,8 @@ func (r *MetricsReporter) Report() (int, error) {
 
 	allMetrics := []MetricEntry{}
 	for _, vm := range vms {
-		if vm.State != VMStateSTARTED {
-			log.Printf("Not reporting metrics for VM %s state %s", vm.ID, vm.State)
+		if vm.Status != VMStatusSTARTED {
+			log.Printf("Not reporting metrics for VM %s status %s", vm.ID, vm.Status)
 			continue
 		}
 		log.Printf("Reporting metrics for VM %s", vm.ID)

@@ -79,10 +79,10 @@ Configuration can also be provided or overridden using environment variables. Th
 
 ## Virtual Machine Lifecycle
 
-The agent simulates VM lifecycle management with the following state machine:
+The agent simulates VM lifecycle management with the following status machine:
 
 ```mermaid
-stateDiagram-v2
+statusDiagram-v2
     [*] --> CREATED: CreateVM
     CREATED --> STARTED: StartVM
     STARTED --> STOPPED: StopVM
@@ -91,16 +91,16 @@ stateDiagram-v2
     DELETED --> [*]
 ```
 
-### VM States
+### VM Statuss
 
-| State   | Description                        | Available Operations        |
+| Status  | Description                        | Available Operations        |
 | ------- | ---------------------------------- | --------------------------- |
-| CREATED | Initial state after VM creation    | StartVM                     |
+| CREATED | Initial status after VM creation   | StartVM                     |
 | STARTED | VM is running, consuming resources | StopVM                      |
 | STOPPED | VM exists but is not running       | StartVM, DeleteVM, UpdateVM |
 | DELETED | VM is marked for deletion          | (None)                      |
 
-Each state transition includes a simulated delay and a configurable chance of failure to mimic real-world conditions.
+Each status transition includes a simulated delay and a configurable chance of failure to mimic real-world conditions.
 
 ## Usage
 
@@ -133,13 +133,13 @@ All metrics are generated with realistic fluctuations to simulate actual VM beha
 
 The test agent can process the following job types from Fulcrum Core:
 
-- `ServiceCreate`: Creates a new VM in the CREATED state
+- `ServiceCreate`: Creates a new VM in the CREATED status
 - `ServiceUpdate`: Updates a VM (start/stop operations)
 - `ServiceStart`: Transitions a VM from CREATED or STOPPED to STARTED
 - `ServiceStop`: Transitions a VM from STARTED to STOPPED
 - `ServiceDelete`: Deletes a VM (transitions from STOPPED to DELETED)
 
-Jobs are processed according to the state machine rules. If a job requests an invalid state transition, the agent will report an error.
+Jobs are processed according to the status machine rules. If a job requests an invalid status transition, the agent will report an error.
 
 ## Simulation Parameters
 
@@ -184,12 +184,12 @@ Check:
 - Verify the metrics reporting interval
 
 
-### Unexpected VM States
+### Unexpected VM Statuss
 
-If VMs seem to be in unexpected states:
+If VMs seem to be in unexpected statuss:
 1. Check the agent logs for operation errors
-2. Review the state transition rules in the VM lifecycle section
-3. Verify that job requests are requesting valid state transitions
+2. Review the status transition rules in the VM lifecycle section
+3. Verify that job requests are requesting valid status transitions
 
 ## Development and Testing
 
@@ -205,11 +205,11 @@ go test -v ./agent
 
 ### Viewing Agent Status
 
-The agent logs VM state counts and job statistics every 30 seconds:
+The agent logs VM status counts and job statistics every 30 seconds:
 
 ```
-VM States: map[CREATED:2 STARTED:5 STOPPED:3]
+VM Statuss: map[CREATED:2 STARTED:5 STOPPED:3]
 Jobs: Processed: 15, Succeeded: 14, Failed: 1
 ```
 
-These logs provide visibility into the agent's internal state and operation history.
+These logs provide visibility into the agent's internal status and operation history.

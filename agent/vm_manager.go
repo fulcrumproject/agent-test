@@ -11,21 +11,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// VMState represents the possible states of a VM
-type VMState string
+// VMStatus represents the possible statuss of a VM
+type VMStatus string
 
 const (
-	VMStateCREATED VMState = "CREATED"
-	VMStateSTARTED VMState = "STARTED"
-	VMStateSTOPPED VMState = "STOPPED"
-	VMStateDELETED VMState = "DELETED"
+	VMStatusCREATED VMStatus = "CREATED"
+	VMStatusSTARTED VMStatus = "STARTED"
+	VMStatusSTOPPED VMStatus = "STOPPED"
+	VMStatusDELETED VMStatus = "DELETED"
 )
 
 // VM represents a simulated virtual machine
 type VM struct {
 	ID           string
 	Name         string
-	State        VMState
+	Status       VMStatus
 	CreatedAt    time.Time
 	CPU          int
 	Memory       int
@@ -33,7 +33,7 @@ type VM struct {
 	MemoryUsage  float64 // Simulated memory usage (0-100%)
 	DiskUsage    float64 // Simulated disk usage (0-100%)
 	NetworkUsage float64 // Simulated network throughput (Mbps)
-	ErrorMessage string  // Contains error message if State is ERROR
+	ErrorMessage string  // Contains error message if Status is ERROR
 }
 
 // VMManager handles the simulation of VM lifecycles
@@ -89,7 +89,7 @@ func (m *VMManager) CreateVM(name string, cpu int, memory int) (*VM, error) {
 	vm := &VM{
 		ID:           id,
 		Name:         name,
-		State:        VMStateCREATED,
+		Status:       VMStatusCREATED,
 		CreatedAt:    time.Now(),
 		CPUUsage:     0,
 		MemoryUsage:  0,
@@ -109,7 +109,7 @@ func (m *VMManager) CreateVM(name string, cpu int, memory int) (*VM, error) {
 	m.vms[id] = vm
 
 	// Initialize VM properties
-	// vm.State = VMStateRUNNING
+	// vm.Status = VMStatusRUNNING
 	vm.CPU = cpu
 	vm.Memory = memory
 	vm.DiskUsage = 10.0 + rand.Float64()*30.0 // 10-40% initial disk usage
@@ -127,8 +127,8 @@ func (m *VMManager) UpdateVM(id, name string, cpu int, memory int) error {
 		return fmt.Errorf("VM not found: %s", id)
 	}
 
-	if vm.State != VMStateSTOPPED && vm.State != VMStateSTARTED {
-		return fmt.Errorf("VM cannot be updated from state %s", vm.State)
+	if vm.Status != VMStatusSTOPPED && vm.Status != VMStatusSTARTED {
+		return fmt.Errorf("VM cannot be updated from status %s", vm.Status)
 	}
 
 	delay := m.randomDelay()
@@ -161,8 +161,8 @@ func (m *VMManager) StartVM(id string) error {
 		return fmt.Errorf("VM not found: %s", id)
 	}
 
-	if vm.State != VMStateSTOPPED && vm.State != VMStateCREATED {
-		return fmt.Errorf("VM cannot be started from state %s", vm.State)
+	if vm.Status != VMStatusSTOPPED && vm.Status != VMStatusCREATED {
+		return fmt.Errorf("VM cannot be started from status %s", vm.Status)
 	}
 
 	delay := m.randomDelay()
@@ -175,7 +175,7 @@ func (m *VMManager) StartVM(id string) error {
 	}
 
 	// Initialize runtime properties
-	vm.State = VMStateSTARTED
+	vm.Status = VMStatusSTARTED
 	vm.CPUUsage = 5.0 + rand.Float64()*45.0       // 5-50% initial CPU usage
 	vm.MemoryUsage = 20.0 + rand.Float64()*40.0   // 20-60% initial memory usage
 	vm.NetworkUsage = 50.0 + rand.Float64()*100.0 // 50-150 Mbps initial network throughput
@@ -193,8 +193,8 @@ func (m *VMManager) StopVM(id string) error {
 		return fmt.Errorf("VM not found: %s", id)
 	}
 
-	if vm.State != VMStateSTARTED {
-		return fmt.Errorf("VM cannot be stopped from state %s", vm.State)
+	if vm.Status != VMStatusSTARTED {
+		return fmt.Errorf("VM cannot be stopped from status %s", vm.Status)
 	}
 
 	delay := m.randomDelay()
@@ -207,7 +207,7 @@ func (m *VMManager) StopVM(id string) error {
 	}
 
 	// Update VM properties
-	vm.State = VMStateSTOPPED
+	vm.Status = VMStatusSTOPPED
 	vm.CPUUsage = 0
 	vm.MemoryUsage = 0
 	vm.NetworkUsage = 0
@@ -225,8 +225,8 @@ func (m *VMManager) DeleteVM(id string) error {
 		return fmt.Errorf("VM not found: %s", id)
 	}
 
-	if vm.State != VMStateSTOPPED {
-		return fmt.Errorf("VM cannot be deleted from state %s", vm.State)
+	if vm.Status != VMStatusSTOPPED {
+		return fmt.Errorf("VM cannot be deleted from status %s", vm.Status)
 	}
 
 	delay := m.randomDelay()
@@ -239,7 +239,7 @@ func (m *VMManager) DeleteVM(id string) error {
 	}
 
 	// Mark as deleted
-	vm.State = VMStateDELETED
+	vm.Status = VMStatusDELETED
 
 	return nil
 }
@@ -280,7 +280,7 @@ func (m *VMManager) UpdateVMResources() {
 	defer m.mutex.Unlock()
 
 	for _, vm := range m.vms {
-		if vm.State == VMStateSTARTED {
+		if vm.Status == VMStatusSTARTED {
 			// Simulate changing resource utilization
 			// CPU fluctuates more than memory
 			vm.CPUUsage = clamp(vm.CPUUsage+(rand.Float64()*20.0-10.0), 1.0, 95.0)
@@ -291,14 +291,14 @@ func (m *VMManager) UpdateVMResources() {
 	}
 }
 
-// GetStateCounts returns the count of VMs in each state
-func (m *VMManager) GetStateCounts() map[VMState]int {
+// GetStatusCounts returns the count of VMs in each status
+func (m *VMManager) GetStatusCounts() map[VMStatus]int {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
-	counts := make(map[VMState]int)
+	counts := make(map[VMStatus]int)
 	for _, vm := range m.vms {
-		counts[vm.State]++
+		counts[vm.Status]++
 	}
 
 	return counts

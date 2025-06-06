@@ -217,9 +217,9 @@ func (a *Agent) GetUptime() time.Duration {
 	return time.Since(a.startTime)
 }
 
-// GetVMStateCounts returns the count of VMs in each state
-func (a *Agent) GetVMStateCounts() map[VMState]int {
-	return a.vmManager.GetStateCounts()
+// GetVMStatusCounts returns the count of VMs in each status
+func (a *Agent) GetVMStatusCounts() map[VMStatus]int {
+	return a.vmManager.GetStatusCounts()
 }
 
 // GetJobStats returns the job processing statistics

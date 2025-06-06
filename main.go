@@ -74,16 +74,16 @@ func main() {
 	log.Printf("Test agent started successfully (Agent ID: %s)", testAgent.GetAgentID())
 	log.Printf("Press Ctrl+C to stop the agent")
 
-	// Start a background goroutine to periodically display VM state counts
+	// Start a background goroutine to periodically display VM status counts
 	go func() {
 		displayTicker := time.NewTicker(30 * time.Second)
 		defer displayTicker.Stop()
 		for {
 			select {
 			case <-displayTicker.C:
-				// Display VM state counts
-				stateCounts := testAgent.GetVMStateCounts()
-				log.Printf("VM States: %v", stateCounts)
+				// Display VM status counts
+				statusCounts := testAgent.GetVMStatusCounts()
+				log.Printf("VM Statuss: %v", statusCounts)
 
 				// Display job statistics
 				processed, succeeded, failed := testAgent.GetJobStats()
@@ -112,10 +112,10 @@ func main() {
 	processed, succeeded, failed := testAgent.GetJobStats()
 	log.Printf("Final Job Statistics: Processed: %d, Succeeded: %d, Failed: %d", processed, succeeded, failed)
 
-	// Display final VM state counts
-	stateCounts := testAgent.GetVMStateCounts()
-	if len(stateCounts) > 0 {
-		log.Printf("Final VM States: %v", stateCounts)
+	// Display final VM status counts
+	statusCounts := testAgent.GetVMStatusCounts()
+	if len(statusCounts) > 0 {
+		log.Printf("Final VM Statuss: %v", statusCounts)
 	}
 	log.Printf("Agent uptime: %s", testAgent.GetUptime().Round(time.Second))
 }

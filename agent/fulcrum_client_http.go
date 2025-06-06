@@ -22,21 +22,21 @@ const (
 	JobActionServiceDelete     JobAction = "ServiceDelete"
 )
 
-// JobState represents the state of a job
-type JobState string
+// JobStatus represents the status of a job
+type JobStatus string
 
 const (
-	JobStatePending    JobState = "Pending"
-	JobStateProcessing JobState = "Processing"
-	JobStateCompleted  JobState = "Completed"
-	JobStateFailed     JobState = "Failed"
+	JobStatusPending    JobStatus = "Pending"
+	JobStatusProcessing JobStatus = "Processing"
+	JobStatusCompleted  JobStatus = "Completed"
+	JobStatusFailed     JobStatus = "Failed"
 )
 
 // Job represents a job from the Fulcrum Core job queue
 type Job struct {
 	ID       string    `json:"id"`
 	Action   JobAction `json:"action"`
-	State    JobState  `json:"state"`
+	Status   JobStatus `json:"status"`
 	Priority int       `json:"priority"`
 	Service  struct {
 		ID                string  `json:"id"`
@@ -93,7 +93,7 @@ func NewHTTPFulcrumClient(baseURL string, token string) FulcrumClient {
 // UpdateAgentStatus updates the agent's status in Fulcrum Core
 func (c *HTTPFulcrumClient) UpdateAgentStatus(status string) error {
 	reqBody, err := json.Marshal(map[string]any{
-		"state": status,
+		"status": status,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal status update request: %w", err)

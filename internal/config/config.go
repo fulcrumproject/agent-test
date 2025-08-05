@@ -1,21 +1,20 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
 	"time"
+)
 
-	"github.com/joho/godotenv"
+const (
+	EnvPrefix = "TESTAGENT_"
 )
 
 // Config holds the configuration for the test agent
 type Config struct {
 	// Agent authentication
-	AgentToken string `json:"agentToken" env:"AGENT_TOKEN"` // Authentication token for the agent
+	AgentToken string `json:"agentToken" validate:"required" env:"AGENT_TOKEN"` // Authentication token for the agent
 
 	// Fulcrum Core API connection
-	FulcrumAPIURL string `json:"fulcrumApiUrl" env:"FULCRUM_API_URL"`
+	FulcrumAPIURL string `json:"fulcrumApiUrl" validate:"required" env:"FULCRUM_API_URL"`
 
 	// Simulation parameters
 	VMUpdateInterval     time.Duration `json:"vmUpdateInterval" env:"VM_OPERATION_INTERVAL"`      // How often to perform VM operations
@@ -40,46 +39,4 @@ func DefaultConfig() *Config {
 		OperationDelayMax:    10 * time.Second,
 		ErrorRate:            0.05, // 5% chance of failure
 	}
-}
-
-// LoadFromFile loads configuration from a JSON file
-func LoadFromFile(filepath string) (*Config, error) {
-	cfg := DefaultConfig()
-
-	data, err := os.ReadFile(filepath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	if err := json.Unmarshal(data, cfg); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
-	}
-
-	return cfg, nil
-}
-
-// LoadFromEnv overrides configuration with environment variables
-func (c *Config) LoadFromEnv() error {
-	// Load .env files if they exist
-	// .env.local takes precedence over .env
-	_ = godotenv.Load(".env.local")
-	_ = godotenv.Load(".env")
-	return LoadEnvToStruct(c, "TESTAGENT_", "env")
-}
-
-// Validate checks if the configuration is valid
-func (c *Config) Validate() error {
-	if c.AgentToken == "" {
-		return fmt.Errorf("agent token is required")
-	}
-	if c.FulcrumAPIURL == "" {
-		return fmt.Errorf("the Fulcrum API URL is required")
-	}
-	if c.OperationDelayMin > c.OperationDelayMax {
-		return fmt.Errorf("minimum operation delay cannot be greater than maximum")
-	}
-	if c.ErrorRate < 0.0 || c.ErrorRate > 1.0 {
-		return fmt.Errorf("error rate must be between 0.0 and 1.0")
-	}
-	return nil
 }

@@ -1,4 +1,4 @@
-package agent
+package vm
 
 import (
 	"errors"
@@ -7,59 +7,30 @@ import (
 	"sync"
 	"time"
 
-	"fulcrumproject.org/test-agent/config"
 	"github.com/google/uuid"
 )
 
-// VMStatus represents the possible statuss of a VM
-type VMStatus string
-
-const (
-	VMStatusCREATED VMStatus = "CREATED"
-	VMStatusSTARTED VMStatus = "STARTED"
-	VMStatusSTOPPED VMStatus = "STOPPED"
-	VMStatusDELETED VMStatus = "DELETED"
-)
-
-// VM represents a simulated virtual machine
-type VM struct {
-	ID           string
-	Name         string
-	Status       VMStatus
-	CreatedAt    time.Time
-	CPU          int
-	Memory       int
-	CPUUsage     float64 // Simulated CPU usage (0-100%)
-	MemoryUsage  float64 // Simulated memory usage (0-100%)
-	DiskUsage    float64 // Simulated disk usage (0-100%)
-	NetworkUsage float64 // Simulated network throughput (Mbps)
-	ErrorMessage string  // Contains error message if Status is ERROR
+// Manager handles the simulation of VM lifecycles
+type Manager struct {
+	vms           map[string]*VM
+	mutex         sync.RWMutex
+	errorRate     float64
+	delayRangeMin time.Duration
+	delayRangeMax time.Duration
 }
 
-// VMManager handles the simulation of VM lifecycles
-type VMManager struct {
-	vms        map[string]*VM
-	mutex      sync.RWMutex
-	config     *config.Config
-	errorRate  float64
-	delayRange [2]time.Duration // Min and max operation delay
-}
-
-// NewVMManager creates a new VM manager
-func NewVMManager(config *config.Config) *VMManager {
-	return &VMManager{
-		vms:       make(map[string]*VM),
-		config:    config,
-		errorRate: config.ErrorRate,
-		delayRange: [2]time.Duration{
-			config.OperationDelayMin,
-			config.OperationDelayMax,
-		},
+// NewManager creates a new VM manager
+func NewManager(errorRate float64, delayRangeMin, delayRangeMax time.Duration) *Manager {
+	return &Manager{
+		vms:           make(map[string]*VM),
+		errorRate:     errorRate,
+		delayRangeMin: delayRangeMin,
+		delayRangeMax: delayRangeMax,
 	}
 }
 
 // GetVMs returns all managed VMs
-func (m *VMManager) GetVMs() []*VM {
+func (m *Manager) GetVMs() []*VM {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -71,7 +42,7 @@ func (m *VMManager) GetVMs() []*VM {
 }
 
 // GetVM returns a VM by ID
-func (m *VMManager) GetVM(id string) (*VM, bool) {
+func (m *Manager) GetVM(id string) (*VM, bool) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -80,7 +51,7 @@ func (m *VMManager) GetVM(id string) (*VM, bool) {
 }
 
 // CreateVM starts the VM creation process
-func (m *VMManager) CreateVM(name string, cpu int, memory int) (*VM, error) {
+func (m *Manager) CreateVM(name string, cpu int, memory int) (*VM, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -118,7 +89,7 @@ func (m *VMManager) CreateVM(name string, cpu int, memory int) (*VM, error) {
 }
 
 // StartVM starts a stopped VM
-func (m *VMManager) UpdateVM(id, name string, cpu int, memory int) error {
+func (m *Manager) UpdateVM(id, name string, cpu int, memory int) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -152,7 +123,7 @@ func (m *VMManager) UpdateVM(id, name string, cpu int, memory int) error {
 }
 
 // StartVM starts a stopped VM
-func (m *VMManager) StartVM(id string) error {
+func (m *Manager) StartVM(id string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -184,7 +155,7 @@ func (m *VMManager) StartVM(id string) error {
 }
 
 // StopVM stops a running VM
-func (m *VMManager) StopVM(id string) error {
+func (m *Manager) StopVM(id string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -216,7 +187,7 @@ func (m *VMManager) StopVM(id string) error {
 }
 
 // DeleteVM deletes a VM
-func (m *VMManager) DeleteVM(id string) error {
+func (m *Manager) DeleteVM(id string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -245,7 +216,7 @@ func (m *VMManager) DeleteVM(id string) error {
 }
 
 // Retry
-func (m *VMManager) Retry(id string) error {
+func (m *Manager) Retry(id string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -275,7 +246,7 @@ func (m *VMManager) Retry(id string) error {
 }
 
 // UpdateVMResources periodically updates resource usage for running VMs
-func (m *VMManager) UpdateVMResources() {
+func (m *Manager) UpdateVMResources() {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -292,7 +263,7 @@ func (m *VMManager) UpdateVMResources() {
 }
 
 // GetStatusCounts returns the count of VMs in each status
-func (m *VMManager) GetStatusCounts() map[VMStatus]int {
+func (m *Manager) GetStatusCounts() map[VMStatus]int {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -305,9 +276,9 @@ func (m *VMManager) GetStatusCounts() map[VMStatus]int {
 }
 
 // Helper methods
-func (m *VMManager) randomDelay() time.Duration {
-	minDelay := m.delayRange[0]
-	maxDelay := m.delayRange[1]
+func (m *Manager) randomDelay() time.Duration {
+	minDelay := m.delayRangeMin
+	maxDelay := m.delayRangeMax
 
 	// Calculate a random duration between min and max
 	delta := maxDelay - minDelay
@@ -319,7 +290,7 @@ func (m *VMManager) randomDelay() time.Duration {
 	return minDelay + time.Duration(randomMs)
 }
 
-func (m *VMManager) shouldFail() bool {
+func (m *Manager) shouldFail() bool {
 	return rand.Float64() < m.errorRate
 }
 

@@ -3,11 +3,14 @@ module fulcrumproject.org/test-agent
 go 1.24.5
 
 require (
-	github.com/fulcrumproject/agent-lib-go v0.0.0-20250806142347-8a817bcfc13c
+	github.com/fulcrumproject/agent-lib-go v0.0.0-20250806145427-80ad4d81b221
 	github.com/google/uuid v1.6.0
 )
 
-require github.com/joho/godotenv v1.5.1 // indirect
+require (
+	github.com/joho/godotenv v1.5.1 // indirect
+	resty.dev/v3 v3.0.0-beta.3 // indirect
+)
 
 require (
 	github.com/fulcrumproject/utils v0.0.0-20250716134607-ea1fe63b7dd8

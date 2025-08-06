@@ -6,6 +6,8 @@ github.com/fulcrumproject/agent-lib-go v0.0.0-20250805170822-aec08e7d94c2 h1:Bph
 github.com/fulcrumproject/agent-lib-go v0.0.0-20250805170822-aec08e7d94c2/go.mod h1:kM6KEa9u39ZzbFREfqD13+i3TpB6MRoMmldG44O0ll0=
 github.com/fulcrumproject/agent-lib-go v0.0.0-20250806142347-8a817bcfc13c h1:fZSjtrOPgyct4u2wCIDL7pBxe9QsxgWJVpZ8hHC93C8=
 github.com/fulcrumproject/agent-lib-go v0.0.0-20250806142347-8a817bcfc13c/go.mod h1:gqyv9s0RhqCLxqSK/2kHk8gC+V6bQY6UOyP0gCD1Sr0=
+github.com/fulcrumproject/agent-lib-go v0.0.0-20250806145427-80ad4d81b221 h1:uRfccwllic+oHu8QbdF1Z+F8OpW+AZoXNA/UvgENODA=
+github.com/fulcrumproject/agent-lib-go v0.0.0-20250806145427-80ad4d81b221/go.mod h1:/KLOUDVQRwvEeS1xT1/Nrlse3eJ2FcznW2ffcrs6JlY=
 github.com/fulcrumproject/utils v0.0.0-20250716134607-ea1fe63b7dd8 h1:8rMfi6HxGHttKWa2L1Bywzp5Zcd1k4rcopHvsE38+AE=
 github.com/fulcrumproject/utils v0.0.0-20250716134607-ea1fe63b7dd8/go.mod h1:uuVSpub2p6zDISkti6cIQ/WRVuknzDbibXPGUdohNsc=
 github.com/gabriel-vasile/mimetype v1.4.9 h1:5k+WDwEsD9eTLL8Tz3L0VnmVh9QxGjRmjBvAG7U/oYY=
@@ -50,3 +52,5 @@ golang.org/x/text v0.27.0 h1:4fGWRpyh641NLlecmyl4LOe6yDdfaYNrGb2zdfo4JV4=
 golang.org/x/text v0.27.0/go.mod h1:1D28KMCvyooCX9hBiosv5Tz/+YLxj0j7XhWjpSUF7CU=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+resty.dev/v3 v3.0.0-beta.3 h1:3kEwzEgCnnS6Ob4Emlk94t+I/gClyoah7SnNi67lt+E=
+resty.dev/v3 v3.0.0-beta.3/go.mod h1:OgkqiPvTDtOuV4MGZuUDhwOpkY8enjOsjjMzeOHefy4=

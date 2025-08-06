@@ -3,7 +3,7 @@ module fulcrumproject.org/test-agent
 go 1.24.5
 
 require (
-	github.com/fulcrumproject/agent-lib-go v0.0.0-20250805170822-aec08e7d94c2
+	github.com/fulcrumproject/agent-lib-go v0.0.0-20250806142347-8a817bcfc13c
 	github.com/google/uuid v1.6.0
 )
 

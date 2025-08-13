@@ -60,7 +60,7 @@ func (m *Manager) CreateVM(name string, cpu int, memory int) (*VM, error) {
 	vm := &VM{
 		ID:           id,
 		Name:         name,
-		Status:       VMStatusCREATED,
+		Status:       VMStatusSTOPPED,
 		CreatedAt:    time.Now(),
 		CPUUsage:     0,
 		MemoryUsage:  0,
@@ -132,7 +132,7 @@ func (m *Manager) StartVM(id string) error {
 		return fmt.Errorf("VM not found: %s", id)
 	}
 
-	if vm.Status != VMStatusSTOPPED && vm.Status != VMStatusCREATED {
+	if vm.Status != VMStatusSTOPPED {
 		return fmt.Errorf("VM cannot be started from status %s", vm.Status)
 	}
 

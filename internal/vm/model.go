@@ -6,7 +6,6 @@ import "time"
 type VMStatus string
 
 const (
-	VMStatusCREATED VMStatus = "CREATED"
 	VMStatusSTARTED VMStatus = "STARTED"
 	VMStatusSTOPPED VMStatus = "STOPPED"
 	VMStatusDELETED VMStatus = "DELETED"

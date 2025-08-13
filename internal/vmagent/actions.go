@@ -1,11 +1,10 @@
-package handlers
+package vmagent
 
 import (
 	"context"
 	"errors"
 	"time"
 
-	"fulcrumproject.org/test-agent/internal/vm"
 	"github.com/fulcrumproject/agent-lib-go/pkg/agent"
 )
 
@@ -21,14 +20,13 @@ type JobResources struct {
 }
 
 // CreateVMHandler handles VM creation jobs
-func CreateVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, JobResources] {
+func (v *VMAgent) CreateVMHandler() agent.JobHandler[VMServiceProperties, JobResources] {
 	return func(ctx context.Context, job *agent.Job[VMServiceProperties]) (*agent.JobResponse[JobResources], error) {
-		if job.Service.TargetProperties == nil {
+		if job.Params == nil {
 			return nil, errors.New("missing target properties")
 		}
-		props := *job.Service.TargetProperties
 
-		vm, err := vmManager.CreateVM(job.Service.Name, props.CPU, props.Memory)
+		vm, err := v.vmManager.CreateVM(job.Service.Name, job.Params.CPU, job.Params.Memory)
 		if err != nil {
 			return nil, err
 		}
@@ -41,17 +39,16 @@ func CreateVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties
 }
 
 // UpdateVMHandler handles VM update jobs
-func UpdateVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, JobResources] {
+func (v *VMAgent) UpdateVMHandler() agent.JobHandler[VMServiceProperties, JobResources] {
 	return func(ctx context.Context, job *agent.Job[VMServiceProperties]) (*agent.JobResponse[JobResources], error) {
-		if job.Service.TargetProperties == nil {
+		if job.Params == nil {
 			return nil, errors.New("missing target properties")
 		}
-		props := *job.Service.TargetProperties
 		if job.Service.ExternalID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := vmManager.UpdateVM(*job.Service.ExternalID, job.Service.Name, props.CPU, props.Memory); err != nil {
+		if err := v.vmManager.UpdateVM(*job.Service.ExternalID, job.Service.Name, job.Params.CPU, job.Params.Memory); err != nil {
 			return nil, err
 		}
 
@@ -62,13 +59,13 @@ func UpdateVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties
 }
 
 // StartVMHandler handles VM start jobs
-func StartVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, JobResources] {
+func (v *VMAgent) StartVMHandler() agent.JobHandler[VMServiceProperties, JobResources] {
 	return func(ctx context.Context, job *agent.Job[VMServiceProperties]) (*agent.JobResponse[JobResources], error) {
 		if job.Service.ExternalID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := vmManager.StartVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.StartVM(*job.Service.ExternalID); err != nil {
 			return nil, err
 		}
 
@@ -79,13 +76,13 @@ func StartVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties,
 }
 
 // StopVMHandler handles VM stop jobs
-func StopVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, JobResources] {
+func (v *VMAgent) StopVMHandler() agent.JobHandler[VMServiceProperties, JobResources] {
 	return func(ctx context.Context, job *agent.Job[VMServiceProperties]) (*agent.JobResponse[JobResources], error) {
 		if job.Service.ExternalID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := vmManager.StopVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.StopVM(*job.Service.ExternalID); err != nil {
 			return nil, err
 		}
 
@@ -96,13 +93,13 @@ func StopVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, 
 }
 
 // DeleteVMHandler handles VM delete jobs
-func DeleteVMHandler(vmManager *vm.Manager) agent.JobHandler[VMServiceProperties, JobResources] {
+func (v *VMAgent) DeleteVMHandler() agent.JobHandler[VMServiceProperties, JobResources] {
 	return func(ctx context.Context, job *agent.Job[VMServiceProperties]) (*agent.JobResponse[JobResources], error) {
 		if job.Service.ExternalID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := vmManager.DeleteVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.DeleteVM(*job.Service.ExternalID); err != nil {
 			return nil, err
 		}
 

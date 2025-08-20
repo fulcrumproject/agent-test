@@ -44,7 +44,7 @@ func NewVMAgent(vmManager *vm.Manager, client *fulcrumcli.HTTPClient, opts ...st
 	stdAgent.OnJob(agent.JobActionServiceDelete, agent.JobHandlerWrapper(vmAgent.DeleteVMHandler()))
 
 	// Register metrics reporter
-	stdAgent.OnMetrics(vmAgent.MetricsReporter())
+	stdAgent.OnMetrics(agent.MetricsReporterWrapper(vmAgent.MetricsReporter()))
 
 	return vmAgent
 }

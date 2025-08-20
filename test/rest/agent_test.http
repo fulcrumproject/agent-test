@@ -102,7 +102,9 @@ Authorization: Bearer {{consumerToken}}
 {
     "properties": {
         "cpu": 4,
-        "memory": 512
+        "memory": 512,
+        "disk": 8,
+        "image": "debian-12-amd64"
     }
 }
 
@@ -115,7 +117,9 @@ Authorization: Bearer {{consumerToken}}
     "name": "Proxmox VM",
     "properties": {
         "cpu": 4,
-        "memory": 512
+        "memory": 512,
+        "disk": 8,
+        "image": "debian-12-amd64"
     },
     "agentTags": ["{{uniqueTag}}"],
     "serviceTypeId": "0195c3c8-69e5-7806-9598-8523c01ea54f",
@@ -151,7 +155,9 @@ Authorization: Bearer {{consumerToken}}
 {
     "properties": {
         "cpu": 8,
-        "memory": 1024
+        "memory": 1024,
+        "disk": 8,
+        "image": "debian-12-amd64"
     }
 }
 
@@ -174,7 +180,9 @@ Authorization: Bearer {{consumerToken}}
 {
     "properties": {
         "cpu": 4,
-        "memory": 4096
+        "memory": 4096,
+        "disk": 8,
+        "image": "debian-12-amd64"
     }
 }
 

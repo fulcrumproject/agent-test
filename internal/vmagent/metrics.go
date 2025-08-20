@@ -9,8 +9,8 @@ import (
 )
 
 // MetricsReporter collects and returns metrics from VMs
-func (v *VMAgent) MetricsReporter() agent.MetricsReporter {
-	return func(ctx context.Context, service *agent.Service) ([]agent.MetricEntry, error) {
+func (v *VMAgent) MetricsReporter() agent.MetricsReporter[VMProperties, VMResources] {
+	return func(ctx context.Context, service *agent.Service[VMProperties, VMResources]) ([]agent.MetricEntry, error) {
 		var metrics []agent.MetricEntry
 
 		if service == nil || service.ExternalID == nil {

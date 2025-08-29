@@ -1,6 +1,44 @@
 @baseUrl = http://localhost:3000/api/v1
 @adminToken = change-me
 
+### Create a new consumer
+# @name createConsumer
+POST {{baseUrl}}/participants
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "System Integrator",
+  "status": "Enabled"
+}
+
+@consumerId = {{createConsumer.response.body.$.id}}
+
+### Create a new consumer token
+# @name createConsumerToken
+POST {{baseUrl}}/tokens
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "System Integrator Token",
+  "role": "participant",
+  "expireAt": "{{$datetime iso8601 1 y}}",
+  "scopeId": "{{consumerId}}"
+}
+
+@consumerToken = {{createConsumerToken.response.body.$.value}}
+
+### Create a service group
+# @name createServiceGroup
+POST {{baseUrl}}/service-groups
+Authorization: Bearer {{consumerToken}}
+
+{
+    "name": "Project Demo",
+    "consumerId": "{{consumerId}}"
+}
+
+@serviceGroupId = {{createServiceGroup.response.body.$.id}}
+
 ### Create a provider for testing
 # @name createProvider
 POST {{baseUrl}}/participants
@@ -12,6 +50,80 @@ Authorization: Bearer {{adminToken}}
 }
 
 @providerId = {{createProvider.response.body.$.id}}
+
+### Create Data Disk Service Type
+# @name createDataDiskServiceType
+POST {{baseUrl}}/service-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "dummy-data-disk-{{$timestamp}}",
+    "propertySchema": {
+        "storage": {
+            "type": "integer",
+            "label": "Storage (GB)",
+            "required": true,
+            "validators": [
+                {
+                    "type": "enum",
+                    "value": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+                }
+            ]
+        }
+    }
+}
+
+### Store the service type id
+@dataDiskServiceTypeId = {{createDataDiskServiceType.response.body.$.id}}
+@dataDiskServiceTypeName = {{createDataDiskServiceType.response.body.$.name}}
+
+### Create Dummy Data Disk Agent Type
+# @name createDummyDataDiskAgentType
+POST {{baseUrl}}/agent-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "dummy-data-disk-{{$timestamp}}",
+    "serviceTypeIds": [
+        "{{dataDiskServiceTypeId}}"
+    ]
+}
+
+### Store the agent type id
+@dummyDataDiskAgentTypeId = {{createDummyDataDiskAgentType.response.body.$.id}}
+
+### Create a new agent with tags
+# @name createAgent
+POST {{baseUrl}}/agents
+Authorization: Bearer {{adminToken}}
+
+{
+    "name": "Data Disk Agent",
+    "agentTypeId": "{{dummyDataDiskAgentTypeId}}",
+    "providerId": "{{providerId}}",
+    "tags": ["data-disk-{{$timestamp}}"]
+}
+
+@dataDiskAgentId = {{createAgent.response.body.$.id}}
+
+### Create a new data disk service
+# @name createDataDiskService
+POST {{baseUrl}}/services
+Authorization: Bearer {{consumerToken}}
+
+{
+    "name": "Data Disk",
+    "groupId": "{{serviceGroupId}}",
+    "serviceTypeId": "{{dataDiskServiceTypeId}}",
+    "properties": {
+        "storage": 1
+    },
+    "agentId": "{{dataDiskAgentId}}"
+}
+
+@dataDiskServiceId = {{createDataDiskService.response.body.$.id}}
 
 ### Create VM Service Type
 # @name createVMServiceType
@@ -59,6 +171,17 @@ Content-Type: application/json
             "type": "string",
             "label": "Image",
             "required": true
+        },
+        "dataDisk": {
+            "type": "reference",
+            "label": "Data Disk",
+            "required": true,
+            "validators": [
+                {
+                    "type": "serviceType",
+                    "value": ["{{dataDiskServiceTypeName}}"]
+                }
+            ]
         }
     }
 }
@@ -170,44 +293,6 @@ Authorization: Bearer {{adminToken}}
 GET {{baseUrl}}/agents/me
 Authorization: Bearer {{agentToken}}
 
-### Create a new consumer
-# @name createConsumer
-POST {{baseUrl}}/participants
-Authorization: Bearer {{adminToken}}
-
-{
-  "name": "System Integrator",
-  "status": "Enabled"
-}
-
-@consumerId = {{createConsumer.response.body.$.id}}
-
-### Create a new consumer token
-# @name createConsumerToken
-POST {{baseUrl}}/tokens
-Authorization: Bearer {{adminToken}}
-
-{
-  "name": "System Integrator Token",
-  "role": "participant",
-  "expireAt": "{{$datetime iso8601 1 y}}",
-  "scopeId": "{{consumerId}}"
-}
-
-@consumerToken = {{createConsumerToken.response.body.$.value}}
-
-### Create a service group
-# @name createServiceGroup
-POST {{baseUrl}}/service-groups
-Authorization: Bearer {{consumerToken}}
-
-{
-    "name": "Project Demo",
-    "consumerId": "{{consumerId}}"
-}
-
-@serviceGroupId = {{createServiceGroup.response.body.$.id}}
-
 ### Validate service properties before creation
 # @name validateServiceProperties
 POST {{baseUrl}}/service-types/{{vmServiceTypeId}}/validate
@@ -218,7 +303,8 @@ Authorization: Bearer {{consumerToken}}
         "cpu": 4,
         "memory": 512,
         "disk": 8,
-        "image": "debian-12-amd64"
+        "image": "debian-12-amd64",
+        "dataDisk": "{{dataDiskServiceId}}"
     }
 }
 
@@ -233,7 +319,8 @@ Authorization: Bearer {{consumerToken}}
         "cpu": 4,
         "memory": 512,
         "disk": 8,
-        "image": "debian-12-amd64"
+        "image": "debian-12-amd64",
+        "dataDisk": "{{dataDiskServiceId}}"
     },
     "agentTags": ["{{uniqueTag}}"],
     "serviceTypeId": "{{vmServiceTypeId}}",
@@ -271,7 +358,8 @@ Authorization: Bearer {{consumerToken}}
         "cpu": 8,
         "memory": 1024,
         "disk": 8,
-        "image": "debian-12-amd64"
+        "image": "debian-12-amd64",
+        "dataDisk": "{{dataDiskServiceId}}"
     }
 }
 
@@ -296,7 +384,8 @@ Authorization: Bearer {{consumerToken}}
         "cpu": 4,
         "memory": 4096,
         "disk": 8,
-        "image": "debian-12-amd64"
+        "image": "debian-12-amd64",
+        "dataDisk": "{{dataDiskServiceId}}"
     }
 }
 

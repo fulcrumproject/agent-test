@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000/api/v1
-@adminToken = admin-test-token
+@adminToken = change-me
 
 ### Create a provider for testing
 # @name createProvider
@@ -13,6 +13,120 @@ Authorization: Bearer {{adminToken}}
 
 @providerId = {{createProvider.response.body.$.id}}
 
+### Create VM Service Type
+# @name createVMServiceType
+POST {{baseUrl}}/service-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "dummy-vm-{{$timestamp}}",
+    "propertySchema": {
+        "cpu": {
+            "type": "integer",
+            "label": "CPU Cores",
+            "required": true,
+            "validators": [
+                {
+                    "type": "enum",
+                    "value": [1, 2, 4, 8, 16, 32]
+                }
+            ]
+        },
+        "memory": {
+            "type": "integer",
+            "label": "Memory (MB)",
+            "required": true,
+            "validators": [
+                {
+                    "type": "enum",
+                    "value": [512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+                }
+            ]
+        },
+        "disk": {
+            "type": "integer",
+            "label": "Disk (GB)",
+            "required": true,
+            "validators": [
+                {
+                    "type": "enum",
+                    "value": [8, 16, 32, 64, 128, 256, 512, 1024]
+                }
+            ]
+        },
+        "image": {
+            "type": "string",
+            "label": "Image",
+            "required": true
+        }
+    }
+}
+
+### Store the service type id
+@vmServiceTypeId = {{createVMServiceType.response.body.$.id}}
+
+### Create VM CPU Usage Metric Type
+# @name createVMCpuUsageMetricType
+POST {{baseUrl}}/metric-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "vm.cpu.usage",
+    "entityType": "Resource"
+}
+
+### Create VM Memory Usage Metric Type
+# @name createVMMemoryUsageMetricType
+POST {{baseUrl}}/metric-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "vm.memory.usage",
+    "entityType": "Resource"
+}
+
+
+### Create VM Disk Usage Metric Type
+# @name createVMDiskUsageMetricType
+POST {{baseUrl}}/metric-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "vm.disk.usage",
+    "entityType": "Resource"
+}
+
+### Create VM Network Throughput Metric Type
+# @name createVMNetworkThroughputMetricType
+POST {{baseUrl}}/metric-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "vm.network.throughput",
+    "entityType": "Resource"
+}
+
+### Create Dummy VM Agent Type
+# @name createDummyVMAgentType
+POST {{baseUrl}}/agent-types
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "dummy-vm-{{$timestamp}}",
+    "serviceTypeIds": [
+        "{{vmServiceTypeId}}"
+    ]
+}
+
+### Store the agent type id
+@dummyVMAgentTypeId = {{createDummyVMAgentType.response.body.$.id}}
+
 ### Create an agent with tags
 # @name createAgent
 POST {{baseUrl}}/agents
@@ -20,7 +134,7 @@ Authorization: Bearer {{adminToken}}
 
 {
     "name": "VM Agent",
-    "agentTypeId": "0195c3c6-4c7d-7e3c-b481-f276e17a7bec",
+    "agentTypeId": "{{dummyVMAgentTypeId}}",
     "providerId": "{{providerId}}",
     "tags": ["gpu-{{$timestamp}}", "high-memory", "ssd-storage"],
     "configuration": {
@@ -96,7 +210,7 @@ Authorization: Bearer {{consumerToken}}
 
 ### Validate service properties before creation
 # @name validateServiceProperties
-POST {{baseUrl}}/service-types/0195c3c8-69e5-7806-9598-8523c01ea54f/validate
+POST {{baseUrl}}/service-types/{{vmServiceTypeId}}/validate
 Authorization: Bearer {{consumerToken}}
 
 {
@@ -122,7 +236,7 @@ Authorization: Bearer {{consumerToken}}
         "image": "debian-12-amd64"
     },
     "agentTags": ["{{uniqueTag}}"],
-    "serviceTypeId": "0195c3c8-69e5-7806-9598-8523c01ea54f",
+    "serviceTypeId": "{{vmServiceTypeId}}",
     "groupId": "{{serviceGroupId}}"
 }
 
@@ -201,7 +315,6 @@ Authorization: Bearer {{consumerToken}}
 ### List all services
 GET {{baseUrl}}/services
 Authorization: Bearer {{consumerToken}}
-
 
 ### Retry Service Operation
 POST {{baseUrl}}/services/{{serviceId}}/retry

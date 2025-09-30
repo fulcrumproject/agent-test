@@ -356,10 +356,7 @@ Authorization: Bearer {{consumerToken}}
 {
     "properties": {
         "cpu": 8,
-        "memory": 1024,
-        "disk": 8,
-        "image": "debian-12-amd64",
-        "dataDisk": "{{dataDiskServiceId}}"
+        "memory": 1024
     }
 }
 
@@ -382,10 +379,7 @@ Authorization: Bearer {{consumerToken}}
 {
     "properties": {
         "cpu": 4,
-        "memory": 4096,
-        "disk": 8,
-        "image": "debian-12-amd64",
-        "dataDisk": "{{dataDiskServiceId}}"
+        "memory": 4096
     }
 }
 

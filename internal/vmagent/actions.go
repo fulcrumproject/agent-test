@@ -32,8 +32,8 @@ func (v *VMAgent) CreateVMHandler() agent.JobHandler[VMProperties, VMProperties,
 		}
 
 		return &agent.JobResponse[VMResources]{
-			Resources:  &VMResources{TS: time.Now()},
-			ExternalID: &vm.ID,
+			AgentData:       &VMResources{TS: time.Now()},
+			AgentInstanceID: &vm.ID,
 		}, nil
 	}
 }
@@ -44,16 +44,16 @@ func (v *VMAgent) UpdateVMHandler() agent.JobHandler[VMProperties, VMProperties,
 		if job.Params == nil {
 			return nil, errors.New("missing target properties")
 		}
-		if job.Service.ExternalID == nil {
+		if job.Service.AgentInstanceID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := v.vmManager.UpdateVM(*job.Service.ExternalID, job.Service.Name, job.Params.CPU, job.Params.Memory); err != nil {
+		if err := v.vmManager.UpdateVM(*job.Service.AgentInstanceID, job.Service.Name, job.Params.CPU, job.Params.Memory); err != nil {
 			return nil, err
 		}
 
 		return &agent.JobResponse[VMResources]{
-			Resources: &VMResources{TS: time.Now()},
+			AgentData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -61,16 +61,16 @@ func (v *VMAgent) UpdateVMHandler() agent.JobHandler[VMProperties, VMProperties,
 // StartVMHandler handles VM start jobs
 func (v *VMAgent) StartVMHandler() agent.JobHandler[VMProperties, VMProperties, VMResources] {
 	return func(ctx context.Context, job *agent.Job[VMProperties, VMProperties, VMResources]) (*agent.JobResponse[VMResources], error) {
-		if job.Service.ExternalID == nil {
+		if job.Service.AgentInstanceID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := v.vmManager.StartVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.StartVM(*job.Service.AgentInstanceID); err != nil {
 			return nil, err
 		}
 
 		return &agent.JobResponse[VMResources]{
-			Resources: &VMResources{TS: time.Now()},
+			AgentData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -78,16 +78,16 @@ func (v *VMAgent) StartVMHandler() agent.JobHandler[VMProperties, VMProperties, 
 // StopVMHandler handles VM stop jobs
 func (v *VMAgent) StopVMHandler() agent.JobHandler[VMProperties, VMProperties, VMResources] {
 	return func(ctx context.Context, job *agent.Job[VMProperties, VMProperties, VMResources]) (*agent.JobResponse[VMResources], error) {
-		if job.Service.ExternalID == nil {
+		if job.Service.AgentInstanceID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := v.vmManager.StopVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.StopVM(*job.Service.AgentInstanceID); err != nil {
 			return nil, err
 		}
 
 		return &agent.JobResponse[VMResources]{
-			Resources: &VMResources{TS: time.Now()},
+			AgentData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -95,16 +95,16 @@ func (v *VMAgent) StopVMHandler() agent.JobHandler[VMProperties, VMProperties, V
 // DeleteVMHandler handles VM delete jobs
 func (v *VMAgent) DeleteVMHandler() agent.JobHandler[VMProperties, VMProperties, VMResources] {
 	return func(ctx context.Context, job *agent.Job[VMProperties, VMProperties, VMResources]) (*agent.JobResponse[VMResources], error) {
-		if job.Service.ExternalID == nil {
+		if job.Service.AgentInstanceID == nil {
 			return nil, errors.New("missing externalId")
 		}
 
-		if err := v.vmManager.DeleteVM(*job.Service.ExternalID); err != nil {
+		if err := v.vmManager.DeleteVM(*job.Service.AgentInstanceID); err != nil {
 			return nil, err
 		}
 
 		return &agent.JobResponse[VMResources]{
-			Resources: &VMResources{TS: time.Now()},
+			AgentData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }

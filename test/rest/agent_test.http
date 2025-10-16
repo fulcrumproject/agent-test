@@ -183,6 +183,55 @@ Content-Type: application/json
                 }
             ]
         }
+    },
+    "lifecycleSchema": {
+        "states": [
+            {"name": "New"},
+            {"name": "Stopped"},
+            {"name": "Started"},
+            {"name": "Deleted"}
+        ],
+        "actions": [
+            {
+                "name": "create",
+                "requestSchemaType": "properties",
+                "transitions": [
+                    {"from": "New", "to": "Stopped"}
+                ]
+            },
+            {
+                "name": "start",
+                "transitions": [
+                    {"from": "Stopped", "to": "Started"},
+                    {"from": "Stopped", "to": "Stopped", "onError": true}
+                ]
+            },
+            {
+                "name": "stop",
+                "transitions": [
+                    {"from": "Started", "to": "Stopped"},
+                    {"from": "Started", "to": "Started", "onError": true}
+                ]
+            },
+            {
+                "name": "update",
+                "requestSchemaType": "properties",
+                "transitions": [
+                    {"from": "Stopped", "to": "Stopped"},
+                    {"from": "Started", "to": "Started"}
+                ]
+            },
+            {
+                "name": "delete",
+                "transitions": [
+                    {"from": "Stopped", "to": "Deleted"},
+                    {"from": "Started", "to": "Deleted"}
+                ]
+            }
+        ],
+        "initialState": "New",
+        "terminalStates": ["Deleted"],
+        "runningStates": ["Started"]
     }
 }
 

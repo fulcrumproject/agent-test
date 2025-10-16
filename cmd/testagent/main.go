@@ -81,8 +81,8 @@ func main() {
 	}
 
 	// Display final job statistics
-	processed, succeeded, failed, unsupported := testAgent.GetJobStats()
-	log.Printf("Final Job Statistics: Processed: %d, Succeeded: %d, Failed: %d, Unsupported: %d", processed, succeeded, failed, unsupported)
+	processed, succeeded, failed := testAgent.GetJobStats()
+	log.Printf("Final Job Statistics: Processed: %d, Succeeded: %d, Failed: %d", processed, succeeded, failed)
 
 	// Display final VM status counts
 	statusCounts := vmManager.GetStatusCounts()
@@ -104,9 +104,9 @@ func startStatusReporter(ctx context.Context, vmManager *vm.Manager, testAgent *
 			log.Printf("VM Statuss: %v", statusCounts)
 
 			// Display job statistics
-			processed, succeeded, failed, unsupported := testAgent.GetJobStats()
-			log.Printf("Jobs: Processed: %d, Succeeded: %d, Failed: %d, Unsupported: %d",
-				processed, succeeded, failed, unsupported)
+			processed, succeeded, failed := testAgent.GetJobStats()
+			log.Printf("Jobs: Processed: %d, Succeeded: %d, Failed: %d",
+				processed, succeeded, failed)
 		case <-ctx.Done():
 			return
 		}

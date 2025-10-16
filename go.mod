@@ -3,7 +3,7 @@ module github.com/fulcrumproject/test-agent
 go 1.24.5
 
 require (
-	github.com/fulcrumproject/agent-lib-go v0.0.0-20250820145221-b3dab635ef83
+	github.com/fulcrumproject/agent-lib-go v0.0.0-20251016144256-c7868e40154e
 	github.com/google/uuid v1.6.0
 )
 
@@ -14,14 +14,14 @@ require (
 
 require (
 	github.com/fulcrumproject/utils v0.0.0-20250716134607-ea1fe63b7dd8
-	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.27.0 // indirect
+	github.com/go-playground/validator/v10 v10.28.0 // indirect
 	github.com/jinzhu/copier v0.4.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	golang.org/x/crypto v0.41.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/crypto v0.43.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 )

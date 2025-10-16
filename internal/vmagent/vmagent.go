@@ -37,11 +37,11 @@ func NewVMAgent(vmManager *vm.Manager, client *fulcrumcli.HTTPClient, opts ...st
 	stdAgent.OnHealth(vmAgent.HealthHandler())
 
 	// Register job handlers
-	stdAgent.OnJob(agent.JobActionServiceCreate, agent.JobHandlerWrapper(vmAgent.CreateVMHandler()))
-	stdAgent.OnJob(agent.JobActionServiceUpdate, agent.JobHandlerWrapper(vmAgent.UpdateVMHandler()))
-	stdAgent.OnJob(agent.JobActionServiceStart, agent.JobHandlerWrapper(vmAgent.StartVMHandler()))
-	stdAgent.OnJob(agent.JobActionServiceStop, agent.JobHandlerWrapper(vmAgent.StopVMHandler()))
-	stdAgent.OnJob(agent.JobActionServiceDelete, agent.JobHandlerWrapper(vmAgent.DeleteVMHandler()))
+	stdAgent.OnJob("create", agent.JobHandlerWrapper(vmAgent.CreateVMHandler()))
+	stdAgent.OnJob("update", agent.JobHandlerWrapper(vmAgent.UpdateVMHandler()))
+	stdAgent.OnJob("start", agent.JobHandlerWrapper(vmAgent.StartVMHandler()))
+	stdAgent.OnJob("stop", agent.JobHandlerWrapper(vmAgent.StopVMHandler()))
+	stdAgent.OnJob("delete", agent.JobHandlerWrapper(vmAgent.DeleteVMHandler()))
 
 	// Register metrics reporter
 	stdAgent.OnMetrics(agent.MetricsReporterWrapper(vmAgent.MetricsReporter()))
@@ -69,6 +69,6 @@ func (v *VMAgent) GetUptime() time.Duration {
 	return v.stdAgent.GetUptime()
 }
 
-func (v *VMAgent) GetJobStats() (int, int, int, int) {
+func (v *VMAgent) GetJobStats() (int, int, int) {
 	return v.stdAgent.GetJobStats()
 }

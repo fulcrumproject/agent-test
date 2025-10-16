@@ -7,3 +7,4 @@ __debug**
 coverage.out
 ./testagent
 .cursor
+specs/

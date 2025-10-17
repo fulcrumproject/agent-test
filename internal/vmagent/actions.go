@@ -32,8 +32,8 @@ func (v *VMAgent) CreateVMHandler() agent.JobHandler[VMProperties, VMProperties,
 		}
 
 		return &agent.JobResponse[VMResources]{
-			AgentData:       &VMResources{TS: time.Now()},
-			AgentInstanceID: &vm.ID,
+			AgentInstanceData: &VMResources{TS: time.Now()},
+			AgentInstanceID:   &vm.ID,
 		}, nil
 	}
 }
@@ -53,7 +53,7 @@ func (v *VMAgent) UpdateVMHandler() agent.JobHandler[VMProperties, VMProperties,
 		}
 
 		return &agent.JobResponse[VMResources]{
-			AgentData: &VMResources{TS: time.Now()},
+			AgentInstanceData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -70,7 +70,7 @@ func (v *VMAgent) StartVMHandler() agent.JobHandler[VMProperties, VMProperties, 
 		}
 
 		return &agent.JobResponse[VMResources]{
-			AgentData: &VMResources{TS: time.Now()},
+			AgentInstanceData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -87,7 +87,7 @@ func (v *VMAgent) StopVMHandler() agent.JobHandler[VMProperties, VMProperties, V
 		}
 
 		return &agent.JobResponse[VMResources]{
-			AgentData: &VMResources{TS: time.Now()},
+			AgentInstanceData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }
@@ -104,7 +104,7 @@ func (v *VMAgent) DeleteVMHandler() agent.JobHandler[VMProperties, VMProperties,
 		}
 
 		return &agent.JobResponse[VMResources]{
-			AgentData: &VMResources{TS: time.Now()},
+			AgentInstanceData: &VMResources{TS: time.Now()},
 		}, nil
 	}
 }

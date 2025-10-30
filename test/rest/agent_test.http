@@ -117,7 +117,16 @@ Content-Type: application/json
     "name": "dummy-data-disk-{{$timestamp}}",
     "serviceTypeIds": [
         "{{dataDiskServiceTypeId}}"
-    ]
+    ],
+    "configurationSchema": {
+        "properties": {
+            "mountPath": {
+                "type": "string",
+                "label": "Mount Path",
+                "default": "/mnt/disks"
+            }
+        }
+    }
 }
 
 ### Store the agent type id
@@ -132,7 +141,10 @@ Authorization: Bearer {{adminToken}}
     "name": "Data Disk Agent",
     "agentTypeId": "{{dummyDataDiskAgentTypeId}}",
     "providerId": "{{providerId}}",
-    "tags": ["data-disk-{{$timestamp}}"]
+    "tags": ["data-disk-{{$timestamp}}"],
+    "configuration": {
+        "mountPath": "/mnt/data-disks"
+    }
 }
 
 @dataDiskAgentId = {{createAgent.response.body.$.id}}
@@ -335,7 +347,40 @@ Content-Type: application/json
     "name": "dummy-vm-{{$timestamp}}",
     "serviceTypeIds": [
         "{{vmServiceTypeId}}"
-    ]
+    ],
+    "configurationSchema": {
+        "properties": {
+            "timeout": {
+                "type": "integer",
+                "label": "Timeout (seconds)",
+                "default": 60
+            },
+            "retries": {
+                "type": "integer",
+                "label": "Number of Retries",
+                "default": 3
+            },
+            "environment": {
+                "type": "string",
+                "label": "Environment",
+                "default": "production"
+            },
+            "proxmox": {
+                "type": "object",
+                "label": "Proxmox Configuration",
+                "properties": {
+                    "node": {
+                        "type": "string",
+                        "label": "Proxmox Node"
+                    },
+                    "storage": {
+                        "type": "string",
+                        "label": "Storage Name"
+                    }
+                }
+            }
+        }
+    }
 }
 
 ### Store the agent type id
